@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Program {
+  id            String   @id @default(uuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Loved one info
+  firstName     String
+  lastName      String
+  middleName    String?
+  nickname      String?
+  birthDate     DateTime
+  deathDate     DateTime
+  birthPlace    String?
+  deathPlace    String?
+  obituary      String?  @db.Text
+  
+  // Family
+  children      Child[]
+  siblings      Sibling[]
+  parents       String?
+  spouse        String?
+  
+  // Service details
+  serviceName   String?
+  serviceDate   DateTime?
+  serviceTime   String?
+  venue         String?
+  venueAddress  String?
+  
+  // Timeline events
+  events        Event[]
+  
+  // Photos
+  photos        Photo[]
+  
+  // Selected template and customizations
+  templateId    String   @default("classic-elegance")
+  customizations Json?
+  
+  // Status
+  status        ProgramStatus @default(DRAFT)
+  
+  // Payment (for future)
+  paid          Boolean  @default(false)
+  
+  @@index([createdAt])
+  @@map("programs")
+}
+
+model Child {
+  id        String  @id @default(uuid())
+  name      String
+  order     Int     @default(0)
+  program   Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId String
+  
+  @@map("children")
+}
+
+model Sibling {
+  id        String  @id @default(uuid())
+  name      String
+  order     Int     @default(0)
+  program   Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId String
+  
+  @@map("siblings")
+}
+
+model Event {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  order       Int     @default(0)
+  program     Program @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId   String
+  
+  @@map("events")
+}
+
+model Photo {
+  id          String    @id @default(uuid())
+  url         String    // Tigris URL
+  key         String    // Tigris object key for deletion
+  filename    String    // Original filename
+  isPrimary   Boolean   @default(false)
+  order       Int       @default(0)
+  uploadedAt  DateTime  @default(now())
+  program     Program   @relation(fields: [programId], references: [id], onDelete: Cascade)
+  programId   String
+  
+  @@map("photos")
+}
+
+enum ProgramStatus {
+  DRAFT
+  COMPLETED
+  EXPORTED
+}
