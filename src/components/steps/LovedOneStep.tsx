@@ -52,8 +52,15 @@ export function LovedOneStep() {
 
   // Update store when form values change
   React.useEffect(() => {
-    updateProgram(watchedValues);
-  }, [watchedValues, updateProgram]);
+    // Only update if there are actual changes to avoid infinite loops
+    const hasChanges = Object.entries(watchedValues).some(([key, value]) => {
+      return program[key as keyof typeof program] !== value;
+    });
+    
+    if (hasChanges) {
+      updateProgram(watchedValues);
+    }
+  }, [watchedValues, updateProgram, program]);
 
   // Track completed fields
   React.useEffect(() => {

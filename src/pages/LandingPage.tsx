@@ -4,14 +4,11 @@ import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { 
   Heart, 
-  Star, 
-  Users, 
   Download, 
   CheckCircle, 
   ArrowRight,
   Sparkles,
   Clock,
-  Shield,
   Play,
   Award,
   Palette,
@@ -174,43 +171,31 @@ export function LandingPage() {
             </p>
           </motion.div>
           
-          <div className="grid-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-5xl mx-auto">
             {[
               {
                 icon: Heart,
                 title: "Compassionate Design",
-                description: "Beautiful, respectful templates crafted with sensitivity and care for meaningful moments",
+                description: "Beautiful, respectful templates crafted with sensitivity and care",
                 color: "from-red-400 to-pink-500"
               },
               {
                 icon: Palette,
                 title: "Professional Templates",
-                description: "Elegant layouts designed by professionals, optimized for both digital and print",
+                description: "Elegant layouts designed by professionals for both digital and print",
                 color: "from-purple-400 to-indigo-500"
               },
               {
                 icon: Clock,
                 title: "Quick Creation",
-                description: "Intuitive workflow that guides you through creating a complete program in minutes",
+                description: "Intuitive workflow that guides you through creation in minutes",
                 color: "from-blue-400 to-cyan-500"
               },
               {
                 icon: Download,
                 title: "Instant Download",
-                description: "High-resolution PDF ready for professional printing or digital sharing",
+                description: "High-resolution PDF ready for professional printing",
                 color: "from-green-400 to-emerald-500"
-              },
-              {
-                icon: Users,
-                title: "Family Collaboration",
-                description: "Easily gather and organize contributions from multiple family members",
-                color: "from-yellow-400 to-orange-500"
-              },
-              {
-                icon: Shield,
-                title: "Private & Secure",
-                description: "Your precious memories are protected with enterprise-grade security",
-                color: "from-gray-400 to-slate-500"
               }
             ].map((feature, index) => (
               <motion.div
@@ -237,78 +222,6 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Testimonials - Glass Cards */}
-      <section className="py-24 relative">
-        <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-blue-50 opacity-50" />
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-            className="text-center mb-20"
-          >
-            <h2 className="text-headline mb-6">
-              Trusted by families in their time of need
-            </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              Real stories from families who found comfort in creating beautiful memorials
-            </p>
-          </motion.div>
-          
-          <div className="grid md:grid-cols-3 gap-8 max-w-7xl mx-auto">
-            {[
-              {
-                name: "Sarah M.",
-                role: "Daughter",
-                content: "The process was incredibly thoughtful during our most difficult time. The templates are stunning and the final result was a perfect tribute to Dad's memory.",
-                rating: 5
-              },
-              {
-                name: "Michael R.",
-                role: "Son",
-                content: "Professional quality that exceeded our expectations. The program looked like it came from a high-end design studio, but we created it ourselves in under an hour.",
-                rating: 5
-              },
-              {
-                name: "Jennifer L.",
-                role: "Wife",
-                content: "Having something so beautiful to remember Mom by meant everything to our family. The care and attention to detail in every aspect was remarkable.",
-                rating: 5
-              }
-            ].map((testimonial, index) => (
-              <motion.div
-                key={testimonial.name}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                viewport={{ once: true }}
-              >
-                <div className="glass-card p-8 rounded-2xl h-full">
-                  <div className="flex text-orange-400 mb-6">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-5 h-5 fill-current" />
-                    ))}
-                  </div>
-                  <p className="text-memorial mb-6 text-lg leading-relaxed">
-                    "{testimonial.content}"
-                  </p>
-                  <div className="flex items-center">
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-red-400 flex items-center justify-center text-white font-semibold text-lg mr-4">
-                      {testimonial.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                      <div className="text-sm text-gray-500">{testimonial.role}</div>
-                    </div>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Final CTA - Gradient Masterpiece */}
       <section className="py-24 relative overflow-hidden">
