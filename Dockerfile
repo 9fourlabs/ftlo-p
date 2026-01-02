@@ -7,9 +7,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY server/package*.json ./server/
 
-# Install dependencies
-RUN npm ci --omit=dev false
-RUN cd server && npm ci --omit=dev false
+# Install ALL dependencies (including dev) for building
+RUN npm ci
+RUN cd server && npm ci
 
 # Copy source code (dist/ is excluded via .dockerignore)
 COPY . .
