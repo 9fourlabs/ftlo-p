@@ -1,6 +1,6 @@
 FROM node:20-alpine
 
-# Cache buster - force complete rebuild
+# Cache buster - force complete rebuild 2025-01-02
 WORKDIR /app
 
 # Copy package files first (for better caching)
