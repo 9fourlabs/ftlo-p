@@ -1,5 +1,8 @@
 FROM node:20-alpine
 
+# Install OpenSSL and other dependencies for Prisma
+RUN apk add --no-cache openssl openssl-dev libc6-compat
+
 # Cache buster - force complete rebuild 2025-01-02
 WORKDIR /app
 
