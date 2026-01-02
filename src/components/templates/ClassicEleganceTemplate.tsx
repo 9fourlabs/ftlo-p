@@ -6,10 +6,10 @@ interface TemplateProps {
 }
 
 export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
-  const { lovedOne, family, service, timeline, photos } = useProgramStore();
+  const { program } = useProgramStore();
   
-  const primaryPhoto = photos.find(p => p.isPrimary) || photos[0];
-  const fullName = [lovedOne.firstName, lovedOne.middleName, lovedOne.lastName]
+  const primaryPhoto = program.photos?.find((p: any) => p.isPrimary) || program.photos?.[0];
+  const fullName = [program.firstName, program.middleName, program.lastName]
     .filter(Boolean)
     .join(' ');
   
@@ -23,13 +23,13 @@ export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
   };
   
   const lifeSpan = () => {
-    if (!lovedOne.birthDate || !lovedOne.deathDate) return '';
+    if (!program.birthDate || !program.deathDate) return '';
     try {
-      const birth = format(new Date(lovedOne.birthDate), 'MMMM d, yyyy');
-      const death = format(new Date(lovedOne.deathDate), 'MMMM d, yyyy');
+      const birth = format(new Date(program.birthDate), 'MMMM d, yyyy');
+      const death = format(new Date(program.deathDate), 'MMMM d, yyyy');
       return `${birth} ~ ${death}`;
     } catch {
-      return `${lovedOne.birthDate} ~ ${lovedOne.deathDate}`;
+      return `${program.birthDate} ~ ${program.deathDate}`;
     }
   };
   
@@ -69,9 +69,9 @@ export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
             {fullName || 'Name will appear here'}
           </h1>
           
-          {lovedOne.nickname && (
+          {program.nickname && (
             <p className="font-display text-xl text-gold-400 italic mb-4">
-              "{lovedOne.nickname}"
+              "{program.nickname}"
             </p>
           )}
           
@@ -83,16 +83,16 @@ export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
           {/* Service Info */}
           <div className="absolute bottom-16 left-0 right-0 text-center">
             <p className="font-display text-cream-100 text-lg mb-1">
-              {service.serviceName || 'Service name'}
+              {program.serviceName || 'Service name'}
             </p>
             <p className="font-body text-cream-300 text-sm">
-              {formatDate(service.serviceDate) && service.serviceTime 
-                ? `${formatDate(service.serviceDate)} • ${service.serviceTime}`
+              {program.serviceDate && program.serviceTime 
+                ? `${formatDate(program.serviceDate)} • ${program.serviceTime}`
                 : 'Date and time will appear here'
               }
             </p>
             <p className="font-body text-cream-300 text-sm">
-              {service.venue || 'Venue will appear here'}
+              {program.venue || 'Venue will appear here'}
             </p>
           </div>
         </div>
@@ -110,8 +110,8 @@ export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
           contentEditable={editable}
           suppressContentEditableWarning
         >
-          {lovedOne.obituary ? (
-            <p>{lovedOne.obituary}</p>
+          {program.obituary ? (
+            <p>{program.obituary}</p>
           ) : (
             <p className="text-navy-400 italic">
               The obituary will appear here. Share their life story, achievements, and the impact they had on family and friends.
@@ -120,35 +120,35 @@ export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
         </div>
         
         {/* Family */}
-        {(family.children.length > 0 || family.siblings.length > 0 || family.spouse || family.parents) && (
+        {((program.children && program.children.length > 0) || (program.siblings && program.siblings.length > 0) || program.spouse || program.parents) && (
           <div className="mt-12">
             <h3 className="font-display text-xl text-navy-800 mb-4">
               Left to Cherish Their Memory
             </h3>
             
-            {family.spouse && (
+            {program.spouse && (
               <p className="font-body text-navy-700 mb-2">
-                <span className="font-medium">Spouse:</span> {family.spouse}
+                <span className="font-medium">Spouse:</span> {program.spouse}
               </p>
             )}
             
-            {family.children.length > 0 && (
+            {program.children && program.children.length > 0 && (
               <p className="font-body text-navy-700 mb-2">
                 <span className="font-medium">Children:</span>{' '}
-                {family.children.map(c => c.name).join(', ')}
+                {program.children.join(', ')}
               </p>
             )}
             
-            {family.siblings.length > 0 && (
+            {program.siblings && program.siblings.length > 0 && (
               <p className="font-body text-navy-700 mb-2">
                 <span className="font-medium">Siblings:</span>{' '}
-                {family.siblings.map(s => s.name).join(', ')}
+                {program.siblings.join(', ')}
               </p>
             )}
             
-            {family.parents && (
+            {program.parents && (
               <p className="font-body text-navy-700 mb-2">
-                <span className="font-medium">Parents:</span> {family.parents}
+                <span className="font-medium">Parents:</span> {program.parents}
               </p>
             )}
           </div>
@@ -163,7 +163,7 @@ export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
         </h2>
         
         <div className="space-y-4">
-          {timeline.map((event, index) => (
+          {program.timeline?.map((event, index) => (
             <div key={event.id} className="flex items-start gap-4">
               <div className="w-8 h-8 rounded-full bg-navy-800 text-cream-100 
                               flex items-center justify-center text-sm font-medium flex-shrink-0">
@@ -183,9 +183,9 @@ export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
           ))}
         </div>
         
-        {timeline.length === 0 && (
+        {(!program.timeline || program.timeline.length === 0) && (
           <p className="text-center text-navy-400 italic py-8">
-            Order of service will appear here. Add events in the timeline step to see them displayed.
+            Order of service will appear here. Add events in the program.timeline step to see them displayed.
           </p>
         )}
       </div>
@@ -198,9 +198,9 @@ export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
         }}
       >
         {/* Photo collage */}
-        {photos.length > 1 && (
+        {program.photos && program.photos.length > 1 && (
           <div className="grid grid-cols-2 gap-4 p-8 max-w-md">
-            {photos.slice(1, 5).map((photo) => (
+            {program.photos?.slice(1, 5).map((photo) => (
               <div 
                 key={photo.id}
                 className="aspect-square rounded-lg overflow-hidden border-2 border-gold-500/30"
@@ -221,7 +221,7 @@ export function ClassicEleganceTemplate({ editable = false }: TemplateProps) {
             Thank You
           </p>
           <p className="font-body text-cream-300 max-w-md">
-            The family of {lovedOne.firstName || '[Name]'} {lovedOne.lastName || '[Last Name]'} wishes to express 
+            The family of {program.firstName || '[Name]'} {program.lastName || '[Last Name]'} wishes to express 
             their sincere gratitude for your love, prayers, and support during this time.
           </p>
         </div>

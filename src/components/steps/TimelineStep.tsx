@@ -1,164 +1,246 @@
-import { useState } from 'react';
-import { motion, Reorder } from 'framer-motion';
-import { Plus, GripVertical, X, Clock } from 'lucide-react';
-import { useProgramStore } from '../../store/programStore';
+import React, { useState } from 'react';
+import { motion, Reorder, AnimatePresence } from 'framer-motion';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Plus, 
+  GripVertical, 
+  X, 
+  Clock, 
+  BookOpen, 
+  ChevronDown,
+  ChevronUp
+} from 'lucide-react';
+import { useProgramStore } from '@/store/programStore';
+
+interface TimelineEvent {
+  id: string;
+  title: string;
+  description: string;
+  time?: string;
+}
 
 const COMMON_EVENTS = [
-  { title: 'Musical Selection', description: '' },
+  { title: 'Prelude Music', description: 'Soft background music as guests arrive' },
+  { title: 'Opening Prayer', description: '' },
+  { title: 'Musical Selection', description: 'Hymn or favorite song' },
   { title: 'Scripture Reading', description: '' },
-  { title: 'Prayer', description: '' },
-  { title: 'Solo', description: '' },
-  { title: 'Remarks', description: '(2 minutes please)' },
-  { title: 'Acknowledgements', description: '' },
-  { title: 'Obituary Reading', description: '' },
-  { title: 'Eulogy', description: '' },
-  { title: 'Viewing', description: '' },
-  { title: 'Benediction', description: '' },
-  { title: 'Recessional', description: '' },
+  { title: 'Obituary Reading', description: 'Life story and accomplishments' },
+  { title: 'Eulogy', description: 'Personal reflections and memories' },
+  { title: 'Musical Tribute', description: 'Special song or performance' },
+  { title: 'Remarks', description: 'Family and friends sharing memories' },
+  { title: 'Prayer of Comfort', description: '' },
+  { title: 'Acknowledgements', description: 'Thank you to attendees and helpers' },
+  { title: 'Benediction', description: 'Final blessing' },
+  { title: 'Recessional', description: 'Closing music' },
 ];
 
 export function TimelineStep() {
-  const { timeline, addTimelineEvent, updateTimelineEvent, removeTimelineEvent, reorderTimeline, nextStep, prevStep } = useProgramStore();
+  const { program, updateProgram } = useProgramStore();
+  const [timeline, setTimeline] = useState<TimelineEvent[]>(program.timeline || []);
   const [showQuickAdd, setShowQuickAdd] = useState(false);
   
-  const handleQuickAdd = (event: typeof COMMON_EVENTS[0]) => {
-    addTimelineEvent(event);
+  // Update store when timeline changes
+  React.useEffect(() => {
+    updateProgram({ timeline });
+  }, [timeline, updateProgram]);
+
+  const addTimelineEvent = (eventData: { title: string; description: string }) => {
+    const newEvent: TimelineEvent = {
+      id: `event_${Date.now()}_${Math.random()}`,
+      title: eventData.title,
+      description: eventData.description,
+    };
+    setTimeline(prev => [...prev, newEvent]);
+  };
+
+  const updateTimelineEvent = (id: string, updates: Partial<TimelineEvent>) => {
+    setTimeline(prev => prev.map(event => 
+      event.id === id ? { ...event, ...updates } : event
+    ));
+  };
+
+  const removeTimelineEvent = (id: string) => {
+    setTimeline(prev => prev.filter(event => event.id !== id));
+  };
+
+  const reorderTimeline = (reorderedTimeline: TimelineEvent[]) => {
+    setTimeline(reorderedTimeline);
+  };
+
+  const handleQuickAdd = (eventData: { title: string; description: string }) => {
+    addTimelineEvent(eventData);
     setShowQuickAdd(false);
   };
   
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="max-w-2xl mx-auto"
-    >
-      <div className="text-center mb-10">
-        <h2 className="font-display text-3xl text-navy-800 mb-3">
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Order of Service
-        </h2>
-        <p className="text-navy-600 font-body">
-          Build the program timeline. Drag to reorder events.
+        </h3>
+        <p className="text-gray-600">
+          Create the timeline for the memorial service. You can drag to reorder events.
         </p>
       </div>
-      
-      {/* Quick Add */}
-      <div className="mb-6">
-        <button
-          onClick={() => setShowQuickAdd(!showQuickAdd)}
-          className="flex items-center gap-2 px-4 py-2 bg-cream-200 
-                     hover:bg-cream-300 rounded-lg transition-colors font-body"
-        >
-          <Plus className="w-4 h-4" />
-          Quick Add Common Events
-        </button>
+
+      {/* Quick Add Common Events */}
+      <Card>
+        <CardHeader className="pb-4">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg flex items-center">
+              <Clock className="mr-2 h-5 w-5" />
+              Common Service Events
+            </CardTitle>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowQuickAdd(!showQuickAdd)}
+              className="flex items-center gap-2"
+            >
+              {showQuickAdd ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              {showQuickAdd ? 'Hide' : 'Show'} Quick Add
+            </Button>
+          </div>
+        </CardHeader>
         
-        {showQuickAdd && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            className="mt-3 p-4 bg-cream-100 rounded-lg"
-          >
-            <div className="flex flex-wrap gap-2">
-              {COMMON_EVENTS.map((event) => (
-                <button
-                  key={event.title}
-                  onClick={() => handleQuickAdd(event)}
-                  className="px-3 py-1.5 bg-white border border-cream-300 
-                             rounded-full text-sm font-body text-navy-700
-                             hover:border-gold-400 hover:bg-gold-50 transition-colors"
-                >
-                  {event.title}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </div>
-      
+        <AnimatePresence>
+          {showQuickAdd && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+            >
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {COMMON_EVENTS.map((event) => (
+                    <Button
+                      key={event.title}
+                      variant="outline"
+                      onClick={() => handleQuickAdd(event)}
+                      className="justify-start h-auto p-3 text-left"
+                    >
+                      <div>
+                        <div className="font-medium text-sm">{event.title}</div>
+                        {event.description && (
+                          <div className="text-xs text-gray-500 mt-1">{event.description}</div>
+                        )}
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+              </CardContent>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Card>
+
       {/* Timeline Events */}
-      <Reorder.Group
-        axis="y"
-        values={timeline}
-        onReorder={reorderTimeline}
-        className="space-y-3"
-      >
-        {timeline.map((event) => (
-          <Reorder.Item
-            key={event.id}
-            value={event}
-            className="bg-white rounded-lg border border-cream-300 p-4 
-                       shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing"
-          >
-            <div className="flex items-start gap-3">
-              <GripVertical className="w-5 h-5 text-navy-400 mt-1 flex-shrink-0" />
-              
-              <div className="flex-1 space-y-2">
-                <input
-                  value={event.title}
-                  onChange={(e) => updateTimelineEvent(event.id, { title: e.target.value })}
-                  className="w-full font-body font-medium text-navy-800 
-                             bg-transparent border-b border-transparent 
-                             focus:border-gold-400 focus:outline-none"
-                  placeholder="Event name"
-                />
-                <input
-                  value={event.description}
-                  onChange={(e) => updateTimelineEvent(event.id, { description: e.target.value })}
-                  className="w-full text-sm font-body text-navy-600 
-                             bg-transparent border-b border-transparent 
-                             focus:border-gold-400 focus:outline-none"
-                  placeholder="Details (e.g., Solo by Anne Williams)"
-                />
-              </div>
-              
-              <button
-                onClick={() => removeTimelineEvent(event.id)}
-                className="p-1 text-navy-400 hover:text-rose-500 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
+      <Card>
+        <CardHeader className="pb-4">
+          <CardTitle className="text-lg flex items-center">
+            <BookOpen className="mr-2 h-5 w-5" />
+            Service Timeline
+            {timeline.length > 0 && (
+              <Badge variant="secondary" className="ml-2">
+                {timeline.length} events
+              </Badge>
+            )}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {timeline.length > 0 ? (
+            <Reorder.Group
+              axis="y"
+              values={timeline}
+              onReorder={reorderTimeline}
+              className="space-y-3"
+            >
+              {timeline.map((event, index) => (
+                <Reorder.Item
+                  key={event.id}
+                  value={event}
+                  className="bg-gray-50 rounded-lg border p-4 shadow-sm hover:shadow-md transition-shadow cursor-grab active:cursor-grabbing"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="flex flex-col items-center mt-1">
+                      <GripVertical className="w-4 h-4 text-gray-400 mb-2" />
+                      <div className="text-xs text-gray-500 font-medium">
+                        {index + 1}
+                      </div>
+                    </div>
+                    
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <Label htmlFor={`title-${event.id}`} className="text-sm">Event Name</Label>
+                        <Input
+                          id={`title-${event.id}`}
+                          value={event.title}
+                          onChange={(e) => updateTimelineEvent(event.id, { title: e.target.value })}
+                          placeholder="e.g., Opening Prayer, Musical Selection"
+                          className="mt-1"
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor={`description-${event.id}`} className="text-sm">Details (Optional)</Label>
+                        <Input
+                          id={`description-${event.id}`}
+                          value={event.description}
+                          onChange={(e) => updateTimelineEvent(event.id, { description: e.target.value })}
+                          placeholder="e.g., Solo by Anne Williams, Psalm 23"
+                          className="mt-1"
+                        />
+                      </div>
+                    </div>
+                    
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeTimelineEvent(event.id)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 mt-1"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </Reorder.Item>
+              ))}
+            </Reorder.Group>
+          ) : (
+            <div className="text-center py-12">
+              <Clock className="w-16 h-16 mx-auto text-gray-300 mb-4" />
+              <p className="text-gray-500 mb-2">No events in the timeline yet</p>
+              <p className="text-sm text-gray-400">
+                Use Quick Add above or create custom events below
+              </p>
             </div>
-          </Reorder.Item>
-        ))}
-      </Reorder.Group>
-      
-      {timeline.length === 0 && (
-        <div className="text-center py-12 text-navy-500 font-body">
-          <Clock className="w-12 h-12 mx-auto mb-4 opacity-50" />
-          <p>No events added yet. Use Quick Add or create your own.</p>
-        </div>
-      )}
-      
-      {/* Add Custom Event */}
-      <button
-        onClick={() => addTimelineEvent({ title: '', description: '' })}
-        className="mt-4 w-full py-3 border-2 border-dashed border-cream-400 
-                   rounded-lg text-navy-600 font-body hover:border-gold-400 
-                   hover:text-navy-800 transition-colors flex items-center justify-center gap-2"
-      >
-        <Plus className="w-5 h-5" />
-        Add Custom Event
-      </button>
-      
-      {/* Navigation */}
-      <div className="pt-8 flex justify-between">
-        <button
-          onClick={prevStep}
-          className="px-6 py-3 text-navy-700 font-body font-medium 
-                     hover:text-navy-900 transition-colors"
-        >
-          ← Back
-        </button>
-        <button
-          onClick={nextStep}
-          className="px-8 py-3 bg-navy-800 text-cream-100 rounded-lg 
-                     font-body font-medium hover:bg-navy-700 
-                     transition-colors shadow-lg hover:shadow-xl"
-        >
-          Continue
-        </button>
+          )}
+
+          {/* Add Custom Event */}
+          <Button
+            onClick={() => addTimelineEvent({ title: '', description: '' })}
+            variant="outline"
+            className="w-full mt-4 border-dashed border-2 h-12 text-gray-600 hover:text-gray-800"
+          >
+            <Plus className="w-5 h-5 mr-2" />
+            Add Custom Event
+          </Button>
+        </CardContent>
+      </Card>
+
+      <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
+        <h4 className="text-sm font-semibold text-blue-900 mb-2">
+          💡 Service Planning Tips
+        </h4>
+        <ul className="text-sm text-blue-700 space-y-1">
+          <li>• Drag events up or down to reorder the timeline</li>
+          <li>• A typical service lasts 45-60 minutes</li>
+          <li>• Consider including both formal elements and personal touches</li>
+          <li>• Ask family members if they'd like to participate in specific events</li>
+        </ul>
       </div>
-    </motion.div>
+    </div>
   );
 }

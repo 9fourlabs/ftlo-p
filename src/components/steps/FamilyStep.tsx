@@ -1,193 +1,281 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Plus, X } from 'lucide-react';
-import { useProgramStore } from '../../store/programStore';
+import React, { useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Badge } from '@/components/ui/badge';
+import { useProgramStore } from '@/store/programStore';
+import { Users, Heart, Plus, X, Baby } from 'lucide-react';
+
+const familySchema = z.object({
+  parents: z.string().optional(),
+  spouse: z.string().optional(),
+});
+
+type FamilyFormData = z.infer<typeof familySchema>;
 
 export function FamilyStep() {
-  const { 
-    family, 
-    updateFamily, 
-    addChild, 
-    removeChild, 
-    addSibling, 
-    removeSibling, 
-    nextStep, 
-    prevStep 
-  } = useProgramStore();
+  const { program, updateProgram } = useProgramStore();
   
   const [childName, setChildName] = useState('');
   const [siblingName, setSiblingName] = useState('');
+  const [children, setChildren] = useState<string[]>(program.children || []);
+  const [siblings, setSiblings] = useState<string[]>(program.siblings || []);
+
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<FamilyFormData>({
+    resolver: zodResolver(familySchema),
+    defaultValues: {
+      parents: program.parents || '',
+      spouse: program.spouse || '',
+    },
+  });
+
+  const watchedValues = watch();
+
+  // Update store when form values change
+  React.useEffect(() => {
+    updateProgram({
+      ...watchedValues,
+      children,
+      siblings,
+    });
+  }, [watchedValues, children, siblings, updateProgram]);
   
   const handleAddChild = () => {
     if (childName.trim()) {
-      addChild(childName.trim());
+      const newChildren = [...children, childName.trim()];
+      setChildren(newChildren);
       setChildName('');
     }
   };
   
+  const handleRemoveChild = (index: number) => {
+    const newChildren = children.filter((_, i) => i !== index);
+    setChildren(newChildren);
+  };
+  
   const handleAddSibling = () => {
     if (siblingName.trim()) {
-      addSibling(siblingName.trim());
+      const newSiblings = [...siblings, siblingName.trim()];
+      setSiblings(newSiblings);
       setSiblingName('');
     }
   };
   
+  const handleRemoveSibling = (index: number) => {
+    const newSiblings = siblings.filter((_, i) => i !== index);
+    setSiblings(newSiblings);
+  };
+
+  const onSubmit = (data: FamilyFormData) => {
+    updateProgram({
+      ...data,
+      children,
+      siblings,
+    });
+  };
+  
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="max-w-2xl mx-auto"
-    >
-      <div className="text-center mb-10">
-        <h2 className="font-display text-3xl text-navy-800 mb-3">
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Family Information
-        </h2>
-        <p className="text-navy-600 font-body">
-          Add family members to honor their memory
+        </h3>
+        <p className="text-gray-600">
+          Add family members to honor their memory and relationships
         </p>
       </div>
-      
-      <div className="space-y-8">
-        {/* Parents */}
-        <div>
-          <label className="block text-sm font-medium text-navy-700 mb-2">
-            Parents
-          </label>
-          <input
-            value={family.parents}
-            onChange={(e) => updateFamily({ parents: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                       focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                       transition-all bg-white font-body"
-            placeholder="e.g., John and Mary Smith"
-          />
-        </div>
-        
-        {/* Spouse */}
-        <div>
-          <label className="block text-sm font-medium text-navy-700 mb-2">
-            Spouse
-          </label>
-          <input
-            value={family.spouse}
-            onChange={(e) => updateFamily({ spouse: e.target.value })}
-            className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                       focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                       transition-all bg-white font-body"
-            placeholder="Spouse's name"
-          />
-        </div>
-        
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* Parents & Spouse */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg flex items-center">
+              <Heart className="mr-2 h-5 w-5" />
+              Parents & Spouse
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div>
+              <Label htmlFor="parents">Parents</Label>
+              <Input
+                id="parents"
+                placeholder="e.g., John and Mary Smith"
+                {...register('parents')}
+                error={!!errors.parents}
+              />
+              {errors.parents && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.parents.message}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <Label htmlFor="spouse">Spouse</Label>
+              <Input
+                id="spouse"
+                placeholder="Spouse's name"
+                {...register('spouse')}
+                error={!!errors.spouse}
+              />
+              {errors.spouse && (
+                <p className="mt-1 text-sm text-red-600">
+                  {errors.spouse.message}
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Children */}
-        <div>
-          <label className="block text-sm font-medium text-navy-700 mb-2">
-            Children
-          </label>
-          
-          <div className="flex gap-2 mb-3">
-            <input
-              value={childName}
-              onChange={(e) => setChildName(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleAddChild()}
-              className="flex-1 px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-              placeholder="Add child's name"
-            />
-            <button
-              type="button"
-              onClick={handleAddChild}
-              className="px-4 py-3 bg-gold-500 text-white rounded-lg 
-                         hover:bg-gold-600 transition-colors flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add
-            </button>
-          </div>
-          
-          {family.children.length > 0 && (
-            <div className="space-y-2">
-              {family.children.map((child) => (
-                <div key={child.id} className="flex items-center justify-between 
-                                                 bg-cream-100 px-4 py-2 rounded-lg">
-                  <span className="font-body text-navy-700">{child.name}</span>
-                  <button
-                    onClick={() => removeChild(child.id)}
-                    className="text-rose-500 hover:text-rose-700 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg flex items-center">
+              <Baby className="mr-2 h-5 w-5" />
+              Children
+              {children.length > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {children.length}
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Input
+                value={childName}
+                onChange={(e) => setChildName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddChild())}
+                placeholder="Add child's name"
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                onClick={handleAddChild}
+                disabled={!childName.trim()}
+                size="sm"
+                className="px-4"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add
+              </Button>
             </div>
-          )}
-        </div>
-        
+
+            {children.length > 0 && (
+              <div className="space-y-2">
+                {children.map((child, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg"
+                  >
+                    <span className="text-sm font-medium text-gray-900">{child}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveChild(index)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {children.length === 0 && (
+              <p className="text-sm text-gray-500 italic text-center py-4">
+                No children added yet. Use the form above to add children.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
         {/* Siblings */}
-        <div>
-          <label className="block text-sm font-medium text-navy-700 mb-2">
-            Siblings
-          </label>
-          
-          <div className="flex gap-2 mb-3">
-            <input
-              value={siblingName}
-              onChange={(e) => setSiblingName(e.target.value)}
-              onKeyPress={(e) => e.key === 'Enter' && handleAddSibling()}
-              className="flex-1 px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-              placeholder="Add sibling's name"
-            />
-            <button
-              type="button"
-              onClick={handleAddSibling}
-              className="px-4 py-3 bg-gold-500 text-white rounded-lg 
-                         hover:bg-gold-600 transition-colors flex items-center gap-2"
-            >
-              <Plus className="w-4 h-4" />
-              Add
-            </button>
-          </div>
-          
-          {family.siblings.length > 0 && (
-            <div className="space-y-2">
-              {family.siblings.map((sibling) => (
-                <div key={sibling.id} className="flex items-center justify-between 
-                                                  bg-cream-100 px-4 py-2 rounded-lg">
-                  <span className="font-body text-navy-700">{sibling.name}</span>
-                  <button
-                    onClick={() => removeSibling(sibling.id)}
-                    className="text-rose-500 hover:text-rose-700 transition-colors"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg flex items-center">
+              <Users className="mr-2 h-5 w-5" />
+              Siblings
+              {siblings.length > 0 && (
+                <Badge variant="secondary" className="ml-2">
+                  {siblings.length}
+                </Badge>
+              )}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex gap-2">
+              <Input
+                value={siblingName}
+                onChange={(e) => setSiblingName(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && (e.preventDefault(), handleAddSibling())}
+                placeholder="Add sibling's name"
+                className="flex-1"
+              />
+              <Button
+                type="button"
+                onClick={handleAddSibling}
+                disabled={!siblingName.trim()}
+                size="sm"
+                className="px-4"
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                Add
+              </Button>
             </div>
-          )}
+
+            {siblings.length > 0 && (
+              <div className="space-y-2">
+                {siblings.map((sibling, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg"
+                  >
+                    <span className="text-sm font-medium text-gray-900">{sibling}</span>
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => handleRemoveSibling(index)}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50 h-8 w-8 p-0"
+                    >
+                      <X className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {siblings.length === 0 && (
+              <p className="text-sm text-gray-500 italic text-center py-4">
+                No siblings added yet. Use the form above to add siblings.
+              </p>
+            )}
+          </CardContent>
+        </Card>
+
+        <div className="pt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <h4 className="text-sm font-semibold text-blue-900 mb-2">
+            💡 Family Information Tips
+          </h4>
+          <ul className="text-sm text-blue-700 space-y-1">
+            <li>• Include both biological and chosen family members</li>
+            <li>• You can add step-children, adopted children, or close family friends</li>
+            <li>• Don't worry about getting everything perfect - you can always edit later</li>
+            <li>• Consider adding "predeceased by" information for family members who have passed</li>
+          </ul>
         </div>
-      </div>
-      
-      {/* Navigation */}
-      <div className="pt-8 flex justify-between">
-        <button
-          onClick={prevStep}
-          className="px-6 py-3 text-navy-700 font-body font-medium 
-                     hover:text-navy-900 transition-colors"
-        >
-          ← Back
-        </button>
-        <button
-          onClick={nextStep}
-          className="px-8 py-3 bg-navy-800 text-cream-100 rounded-lg 
-                     font-body font-medium hover:bg-navy-700 
-                     transition-colors shadow-lg hover:shadow-xl"
-        >
-          Continue
-        </button>
-      </div>
-    </motion.div>
+      </form>
+    </div>
   );
 }

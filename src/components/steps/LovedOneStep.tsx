@@ -1,10 +1,14 @@
+import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { motion } from 'framer-motion';
-import { useProgramStore } from '../../store/programStore';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { useProgramStore } from '@/store/programStore';
+import { Calendar, MapPin, User } from 'lucide-react';
 
-const schema = z.object({
+const lovedOneSchema = z.object({
   firstName: z.string().min(1, 'First name is required'),
   lastName: z.string().min(1, 'Last name is required'),
   middleName: z.string().optional(),
@@ -15,171 +19,194 @@ const schema = z.object({
   deathPlace: z.string().optional(),
 });
 
+type LovedOneFormData = z.infer<typeof lovedOneSchema>;
+
 export function LovedOneStep() {
-  const { lovedOne, updateLovedOne, nextStep } = useProgramStore();
+  const { program, updateProgram } = useProgramStore();
   
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    resolver: zodResolver(schema),
-    defaultValues: lovedOne,
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<LovedOneFormData>({
+    resolver: zodResolver(lovedOneSchema),
+    defaultValues: {
+      firstName: program.firstName || '',
+      lastName: program.lastName || '',
+      middleName: program.middleName || '',
+      nickname: program.nickname || '',
+      birthDate: program.birthDate || '',
+      deathDate: program.deathDate || '',
+      birthPlace: program.birthPlace || '',
+      deathPlace: program.deathPlace || '',
+    },
   });
-  
-  const onSubmit = (data: z.infer<typeof schema>) => {
-    updateLovedOne(data);
-    nextStep();
+
+  const watchedValues = watch();
+
+  // Update store when form values change
+  React.useEffect(() => {
+    updateProgram(watchedValues);
+  }, [watchedValues, updateProgram]);
+
+  const onSubmit = (data: LovedOneFormData) => {
+    updateProgram(data);
   };
   
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -20 }}
-      className="max-w-2xl mx-auto"
-    >
-      <div className="text-center mb-10">
-        <h2 className="font-display text-3xl text-navy-800 mb-3">
-          Tell us about your loved one
-        </h2>
-        <p className="text-navy-600 font-body">
-          We'll use this information to personalize their program
+    <div className="space-y-8">
+      <div className="text-center">
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
+          About Your Loved One
+        </h3>
+        <p className="text-gray-600">
+          Tell us about the person being honored so we can personalize their program
         </p>
       </div>
-      
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-navy-700 mb-2">
-              First Name *
-            </label>
-            <input
-              {...register('firstName')}
-              className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-              placeholder="First name"
-            />
-            {errors.firstName && (
-              <p className="mt-1 text-sm text-rose-500">{errors.firstName.message}</p>
-            )}
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-navy-700 mb-2">
-              Last Name *
-            </label>
-            <input
-              {...register('lastName')}
-              className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-              placeholder="Last name"
-            />
-            {errors.lastName && (
-              <p className="mt-1 text-sm text-rose-500">{errors.lastName.message}</p>
-            )}
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-navy-700 mb-2">
-              Middle Name
-            </label>
-            <input
-              {...register('middleName')}
-              className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-              placeholder="Middle name (optional)"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-navy-700 mb-2">
-              Nickname
-            </label>
-            <input
-              {...register('nickname')}
-              className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-              placeholder='Known as (e.g., "Big Mama")'
-            />
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-navy-700 mb-2">
-              Date of Birth *
-            </label>
-            <input
-              type="date"
-              {...register('birthDate')}
-              className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-            />
-            {errors.birthDate && (
-              <p className="mt-1 text-sm text-rose-500">{errors.birthDate.message}</p>
-            )}
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-navy-700 mb-2">
-              Date of Passing *
-            </label>
-            <input
-              type="date"
-              {...register('deathDate')}
-              className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-            />
-            {errors.deathDate && (
-              <p className="mt-1 text-sm text-rose-500">{errors.deathDate.message}</p>
-            )}
-          </div>
-        </div>
-        
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium text-navy-700 mb-2">
-              Place of Birth
-            </label>
-            <input
-              {...register('birthPlace')}
-              className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-              placeholder="City, State"
-            />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-navy-700 mb-2">
-              Place of Passing
-            </label>
-            <input
-              {...register('deathPlace')}
-              className="w-full px-4 py-3 rounded-lg border border-cream-400 
-                         focus:border-gold-500 focus:ring-2 focus:ring-gold-200 
-                         transition-all bg-white font-body"
-              placeholder="City, State"
-            />
-          </div>
-        </div>
-        
-        <div className="pt-6 flex justify-end">
-          <button
-            type="submit"
-            className="px-8 py-3 bg-navy-800 text-cream-100 rounded-lg 
-                       font-body font-medium hover:bg-navy-700 
-                       transition-colors shadow-lg hover:shadow-xl"
-          >
-            Continue
-          </button>
-        </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+        {/* Basic Information */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg flex items-center">
+              <User className="mr-2 h-5 w-5" />
+              Basic Information
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="firstName">First Name *</Label>
+                <Input
+                  id="firstName"
+                  placeholder="First name"
+                  {...register('firstName')}
+                  error={!!errors.firstName}
+                />
+                {errors.firstName && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.firstName.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="lastName">Last Name *</Label>
+                <Input
+                  id="lastName"
+                  placeholder="Last name"
+                  {...register('lastName')}
+                  error={!!errors.lastName}
+                />
+                {errors.lastName && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.lastName.message}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="middleName">Middle Name</Label>
+                <Input
+                  id="middleName"
+                  placeholder="Middle name (optional)"
+                  {...register('middleName')}
+                  error={!!errors.middleName}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="nickname">Nickname</Label>
+                <Input
+                  id="nickname"
+                  placeholder='Known as (e.g., "Big Mama")'
+                  {...register('nickname')}
+                  error={!!errors.nickname}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Important Dates */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg flex items-center">
+              <Calendar className="mr-2 h-5 w-5" />
+              Important Dates
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="birthDate">Date of Birth *</Label>
+                <Input
+                  id="birthDate"
+                  type="date"
+                  {...register('birthDate')}
+                  error={!!errors.birthDate}
+                />
+                {errors.birthDate && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.birthDate.message}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <Label htmlFor="deathDate">Date of Passing *</Label>
+                <Input
+                  id="deathDate"
+                  type="date"
+                  {...register('deathDate')}
+                  error={!!errors.deathDate}
+                />
+                {errors.deathDate && (
+                  <p className="mt-1 text-sm text-red-600">
+                    {errors.deathDate.message}
+                  </p>
+                )}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Places */}
+        <Card>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-lg flex items-center">
+              <MapPin className="mr-2 h-5 w-5" />
+              Places
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <Label htmlFor="birthPlace">Place of Birth</Label>
+                <Input
+                  id="birthPlace"
+                  placeholder="City, State"
+                  {...register('birthPlace')}
+                  error={!!errors.birthPlace}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="deathPlace">Place of Passing</Label>
+                <Input
+                  id="deathPlace"
+                  placeholder="City, State"
+                  {...register('deathPlace')}
+                  error={!!errors.deathPlace}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </form>
-    </motion.div>
+    </div>
   );
 }

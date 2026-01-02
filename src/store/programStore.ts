@@ -1,15 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 
-interface Child {
-  id: string;
-  name: string;
-}
-
-interface Sibling {
-  id: string;
-  name: string;
-}
 
 interface TimelineEvent {
   id: string;
@@ -24,180 +15,95 @@ interface Photo {
   isPrimary: boolean;
 }
 
-interface LovedOneInfo {
-  firstName: string;
-  lastName: string;
-  middleName: string;
-  nickname: string;
-  birthDate: string;
-  deathDate: string;
-  birthPlace: string;
-  deathPlace: string;
-  obituary: string;
-}
 
-interface FamilyInfo {
-  parents: string;
-  spouse: string;
-  children: Child[];
-  siblings: Sibling[];
-}
-
-interface ServiceInfo {
-  serviceName: string;
-  serviceDate: string;
-  serviceTime: string;
-  venue: string;
-  venueAddress: string;
+interface Program {
+  // Basic information
+  firstName?: string;
+  lastName?: string;
+  middleName?: string;
+  nickname?: string;
+  birthDate?: string;
+  deathDate?: string;
+  birthPlace?: string;
+  deathPlace?: string;
+  
+  // Family
+  parents?: string;
+  spouse?: string;
+  children?: string[];
+  siblings?: string[];
+  
+  // Service
+  serviceName?: string;
+  serviceDate?: string;
+  serviceTime?: string;
+  venue?: string;
+  venueAddress?: string;
+  officiant?: string;
+  additionalInfo?: string;
+  
+  // Content
+  obituary?: string;
+  timeline?: TimelineEvent[];
+  photos?: Photo[];
+  
+  // Design
+  template?: string;
+  customizations?: Record<string, any>;
 }
 
 interface ProgramState {
-  currentStep: number;
-  lovedOne: LovedOneInfo;
-  family: FamilyInfo;
-  service: ServiceInfo;
-  timeline: TimelineEvent[];
-  photos: Photo[];
-  selectedTemplate: string;
-  customizations: Record<string, any>;
+  program: Program;
   
   // Actions
-  setStep: (step: number) => void;
-  nextStep: () => void;
-  prevStep: () => void;
-  updateLovedOne: (data: Partial<LovedOneInfo>) => void;
-  updateFamily: (data: Partial<FamilyInfo>) => void;
-  updateService: (data: Partial<ServiceInfo>) => void;
-  addChild: (name: string) => void;
-  removeChild: (id: string) => void;
-  addSibling: (name: string) => void;
-  removeSibling: (id: string) => void;
-  addTimelineEvent: (event: Omit<TimelineEvent, 'id'>) => void;
-  updateTimelineEvent: (id: string, data: Partial<TimelineEvent>) => void;
-  removeTimelineEvent: (id: string) => void;
-  reorderTimeline: (events: TimelineEvent[]) => void;
-  addPhoto: (photo: Omit<Photo, 'id'>) => void;
-  removePhoto: (id: string) => void;
-  setPrimaryPhoto: (id: string) => void;
-  setTemplate: (templateId: string) => void;
-  updateCustomizations: (data: Record<string, any>) => void;
+  updateProgram: (data: Partial<Program>) => void;
+  saveProgram: (data: Program) => Promise<void>;
   resetProgram: () => void;
 }
 
-const initialState = {
-  currentStep: 0,
-  lovedOne: {
-    firstName: '',
-    lastName: '',
-    middleName: '',
-    nickname: '',
-    birthDate: '',
-    deathDate: '',
-    birthPlace: '',
-    deathPlace: '',
-    obituary: '',
-  },
-  family: {
-    parents: '',
-    spouse: '',
-    children: [],
-    siblings: [],
-  },
-  service: {
-    serviceName: 'Homegoing Celebration',
-    serviceDate: '',
-    serviceTime: '',
-    venue: '',
-    venueAddress: '',
-  },
+const initialProgram: Program = {
+  firstName: '',
+  lastName: '',
+  middleName: '',
+  nickname: '',
+  birthDate: '',
+  deathDate: '',
+  birthPlace: '',
+  deathPlace: '',
+  parents: '',
+  spouse: '',
+  children: [],
+  siblings: [],
+  serviceName: '',
+  serviceDate: '',
+  serviceTime: '',
+  venue: '',
+  venueAddress: '',
+  officiant: '',
+  additionalInfo: '',
+  obituary: '',
   timeline: [],
   photos: [],
-  selectedTemplate: 'classic-elegance',
+  template: 'classic-elegance',
   customizations: {},
 };
 
 export const useProgramStore = create<ProgramState>()(
   persist(
     (set) => ({
-      ...initialState,
+      program: initialProgram,
       
-      setStep: (step) => set({ currentStep: step }),
-      nextStep: () => set((state) => ({ currentStep: state.currentStep + 1 })),
-      prevStep: () => set((state) => ({ currentStep: Math.max(0, state.currentStep - 1) })),
-      
-      updateLovedOne: (data) => set((state) => ({
-        lovedOne: { ...state.lovedOne, ...data }
+      updateProgram: (data) => set((state) => ({
+        program: { ...state.program, ...data }
       })),
       
-      updateFamily: (data) => set((state) => ({
-        family: { ...state.family, ...data }
-      })),
+      saveProgram: async (data) => {
+        // In a real app, this would save to a backend
+        set({ program: data });
+        return Promise.resolve();
+      },
       
-      updateService: (data) => set((state) => ({
-        service: { ...state.service, ...data }
-      })),
-      
-      addChild: (name) => set((state) => ({
-        family: {
-          ...state.family,
-          children: [...state.family.children, { id: crypto.randomUUID(), name }]
-        }
-      })),
-      
-      removeChild: (id) => set((state) => ({
-        family: {
-          ...state.family,
-          children: state.family.children.filter(c => c.id !== id)
-        }
-      })),
-      
-      addSibling: (name) => set((state) => ({
-        family: {
-          ...state.family,
-          siblings: [...state.family.siblings, { id: crypto.randomUUID(), name }]
-        }
-      })),
-      
-      removeSibling: (id) => set((state) => ({
-        family: {
-          ...state.family,
-          siblings: state.family.siblings.filter(s => s.id !== id)
-        }
-      })),
-      
-      addTimelineEvent: (event) => set((state) => ({
-        timeline: [...state.timeline, { ...event, id: crypto.randomUUID() }]
-      })),
-      
-      updateTimelineEvent: (id, data) => set((state) => ({
-        timeline: state.timeline.map(e => e.id === id ? { ...e, ...data } : e)
-      })),
-      
-      removeTimelineEvent: (id) => set((state) => ({
-        timeline: state.timeline.filter(e => e.id !== id)
-      })),
-      
-      reorderTimeline: (events) => set({ timeline: events }),
-      
-      addPhoto: (photo) => set((state) => ({
-        photos: [...state.photos, { ...photo, id: crypto.randomUUID() }]
-      })),
-      
-      removePhoto: (id) => set((state) => ({
-        photos: state.photos.filter(p => p.id !== id)
-      })),
-      
-      setPrimaryPhoto: (id) => set((state) => ({
-        photos: state.photos.map(p => ({ ...p, isPrimary: p.id === id }))
-      })),
-      
-      setTemplate: (templateId) => set({ selectedTemplate: templateId }),
-      
-      updateCustomizations: (data) => set((state) => ({
-        customizations: { ...state.customizations, ...data }
-      })),
-      
-      resetProgram: () => set(initialState),
+      resetProgram: () => set({ program: initialProgram }),
     }),
     {
       name: 'funeral-program-storage',
