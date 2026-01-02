@@ -50,6 +50,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
+// API health check (for Fly.io)
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
 // API routes
 app.use('/api/programs', programRoutes);
 app.use('/api/photos', photoRoutes);

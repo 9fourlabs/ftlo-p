@@ -1,51 +1,52 @@
-app = "funeral-programs"
-primary_region = "atl"
+# fly.toml app configuration file generated for funeral-programs-app
+#
+# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
+#
+
+app = 'funeral-programs-app'
+primary_region = 'iad'
 
 [build]
-  dockerfile = "Dockerfile"
+  [build.args]
+    VITE_API_BASE_URL = "https://funeral-programs-app.fly.dev/api"
+
+[processes]
+  app = 'node server/dist/index.js'
 
 [env]
-  NODE_ENV = "production"
-  PORT = "3000"
-  FRONTEND_URL = "https://funeral-programs.fly.dev"
+  PORT = '8080'
+  NODE_ENV = 'production'
+  FRONTEND_URL = 'https://funeral-programs-app.fly.dev'
+
+[[mounts]]
+  source = 'data'
+  destination = '/data'
+  auto_extend_size_threshold = 80
+  auto_extend_size_increment = '1GB'
+  auto_extend_size_limit = '10GB'
 
 [http_service]
-  internal_port = 3000
+  internal_port = 8080
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 1
-  processes = ["app"]
+  processes = ['app']
 
-  [http_service.concurrency]
-    type = "connections"
-    hard_limit = 1000
-    soft_limit = 1000
+[http_service.concurrency]
+  type = "connections"
+  hard_limit = 25
+  soft_limit = 20
 
-[[mounts]]
-  source = "funeral_programs_data"
-  destination = "/data"
+[[http_service.checks]]
+  grace_period = "10s"
+  interval = "30s"
+  method = "GET"
+  timeout = "5s"
+  path = "/api/health"
 
-[[services]]
-  protocol = "tcp"
-  internal_port = 3000
-
-  [[services.ports]]
-    port = 80
-    handlers = ["http"]
-
-  [[services.ports]]
-    port = 443
-    handlers = ["tls", "http"]
-
-[checks]
-  [checks.health]
-    grace_period = "10s"
-    interval = "30s"
-    method = "GET"
-    path = "/health"
-    protocol = "http"
-    timeout = "5s"
-    
-[restart]
-  policy = "on-failure"
+[[vm]]
+  memory = '1gb'
+  cpu_kind = 'shared'
+  cpus = 1
+  memory_mb = 1024

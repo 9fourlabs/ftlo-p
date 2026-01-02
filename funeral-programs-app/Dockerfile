@@ -1,60 +1,47 @@
-# Build stage
-FROM node:20-alpine AS builder
+FROM node:20-alpine
 
+# Cache buster - force complete rebuild
 WORKDIR /app
 
-# Copy package files
+# Copy package files first (for better caching)
 COPY package*.json ./
 COPY server/package*.json ./server/
 
 # Install dependencies
-RUN npm ci
-RUN cd server && npm ci
+RUN npm ci --omit=dev false
+RUN cd server && npm ci --omit=dev false
 
-# Copy source code
+# Copy source code (dist/ is excluded via .dockerignore)
 COPY . .
+
+# Accept build arguments for environment variables
+ARG VITE_API_BASE_URL
+ARG BUILD_TIMESTAMP=unknown
+
+# Set environment variables for build process
+ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
+ENV BUILD_TIMESTAMP=$BUILD_TIMESTAMP
 
 # Generate Prisma client
 RUN cd server && npx prisma generate
 
-# Build frontend
+# Force complete clean rebuild - break all caches
+RUN rm -rf dist/ node_modules/.cache/ .next/ build/ server/dist/
 RUN npm run build
-
-# Build backend
 RUN cd server && npm run build
 
-# Production stage
-FROM node:20-alpine AS production
+# Verify build succeeded
+RUN ls -la dist/ && ls -la server/dist/
 
-WORKDIR /app
+# Remove dev dependencies to reduce image size
+RUN npm prune --omit=dev
+RUN cd server && npm prune --omit=dev
 
-# Install production dependencies only
-COPY server/package*.json ./server/
-RUN cd server && npm ci --only=production
-
-# Copy built application
-COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/server/dist ./server/dist
-COPY --from=builder /app/server/prisma ./server/prisma
-COPY --from=builder /app/server/node_modules ./server/node_modules
-
-# Generate Prisma client in production
-RUN cd server && npx prisma generate
-
-# Create non-root user
-RUN addgroup -g 1001 -S nodejs
-RUN adduser -S app -u 1001
-
-# Change ownership of the app directory
-RUN chown -R app:nodejs /app
-USER app
+# Create uploads directory
+RUN mkdir -p uploads
 
 # Expose port
-EXPOSE 3000
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1
+EXPOSE 8080
 
 # Start the application
 CMD ["node", "server/dist/index.js"]
