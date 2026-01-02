@@ -23,150 +23,144 @@ export function LandingPage() {
   const opacity = useTransform(scrollY, [0, 200], [1, 0]);
 
   return (
-    <div className="min-h-screen overflow-hidden">
-      {/* Hero Section with Glass Morphism */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Animated Mesh Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-white to-purple-50">
+    <div className="min-h-screen">
+      {/* Professional Hero Section */}
+      <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-b from-background to-muted/30">
+        {/* Subtle background pattern */}
+        <div className="absolute inset-0 opacity-40">
           <div 
-            className="absolute inset-0 opacity-30"
+            className="absolute inset-0"
             style={{
-              background: `
-                radial-gradient(at 20% 80%, hsla(15,100%,70%,0.3) 0px, transparent 60%),
-                radial-gradient(at 80% 20%, hsla(200,50%,70%,0.2) 0px, transparent 60%),
-                radial-gradient(at 40% 40%, hsla(270,95%,75%,0.15) 0px, transparent 60%)
-              `
+              background: `var(--gradient-mesh)`
             }}
           />
           
-          {/* Animated floating elements */}
+          {/* Minimal floating elements */}
           <motion.div
             style={{ 
               y: y1,
-              background: 'linear-gradient(135deg, hsla(15,100%,70%,0.1) 0%, transparent 50%)',
-              filter: 'blur(40px)',
+              background: 'radial-gradient(circle, hsla(15,60%,60%,0.08) 0%, transparent 70%)',
             }}
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full"
+            className="absolute top-1/4 left-1/3 w-64 h-64 rounded-full"
           />
           <motion.div
             style={{ 
               y: y2,
-              background: 'linear-gradient(135deg, hsla(270,95%,75%,0.1) 0%, transparent 50%)',
-              filter: 'blur(60px)',
+              background: 'radial-gradient(circle, hsla(240,30%,70%,0.05) 0%, transparent 70%)',
             }}
-            className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full"
+            className="absolute bottom-1/3 right-1/3 w-48 h-48 rounded-full"
           />
         </div>
         
-        {/* Glass Header */}
+        {/* Professional Content */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="container mx-auto px-4 relative z-10 text-center"
+          className="container mx-auto px-4 relative z-10 text-center max-w-4xl"
         >
-          {/* Status Badge */}
+          {/* Professional Badge */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
+            initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
-            className="inline-flex items-center glass-card px-6 py-3 rounded-full text-sm font-medium mb-8 border"
+            className="inline-flex items-center bg-muted/50 px-4 py-2 rounded-full text-sm font-medium mb-8 border border-border/50 backdrop-blur-sm"
           >
-            <div className="w-2 h-2 bg-green-400 rounded-full mr-3 animate-pulse" />
-            <Sparkles className="w-4 h-4 mr-2 text-orange-500" />
+            <div className="w-2 h-2 bg-green-500 rounded-full mr-3" />
+            <Sparkles className="w-4 h-4 mr-2 text-primary" />
             Professional memorial programs made simple
           </motion.div>
           
-          {/* Main Heading */}
+          {/* Clean Heading */}
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-display mb-8"
+            className="text-display mb-6"
           >
-            <span className="block">Honor Their</span>
-            <span className="block gradient-text-primary font-serif italic">Legacy</span>
-            <span className="block">With Dignity</span>
+            Honor Their{" "}
+            <span className="gradient-text-primary font-serif italic">Legacy</span>
+            {" "}With Dignity
           </motion.h1>
           
-          {/* Subtitle */}
+          {/* Professional Subtitle */}
           <motion.p
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
-            className="text-xl md:text-2xl text-gray-600 mb-12 max-w-4xl mx-auto leading-relaxed"
+            className="text-body-lg text-muted-foreground mb-12 max-w-2xl mx-auto"
           >
             Create meaningful, professional memorial programs that celebrate a life well-lived. 
-            Our compassionate platform combines elegant design with thoughtful functionality.
+            Elegant design meets thoughtful functionality.
           </motion.p>
           
-          {/* CTA Buttons */}
+          {/* Professional CTA Buttons */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
-            className="cluster justify-center mb-16"
+            className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-16"
           >
             <Button 
               asChild 
               size="lg" 
-              className="btn-primary text-lg px-10 py-6 font-semibold"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground h-12 px-8 font-medium rounded-lg shadow-md hover:shadow-lg transition-all"
             >
               <Link to="/create">
                 Create Memorial Program
-                <ArrowRight className="ml-2 w-5 h-5" />
+                <ArrowRight className="ml-2 w-4 h-4" />
               </Link>
             </Button>
             
             <Button 
               variant="outline" 
               size="lg"
-              className="btn-glass text-lg px-10 py-6 font-semibold"
+              className="h-12 px-8 font-medium border-border hover:bg-muted rounded-lg transition-all"
               onClick={() => setIsPlaying(!isPlaying)}
             >
-              <Play className="mr-2 w-5 h-5" />
+              <Play className="mr-2 w-4 h-4" />
               Watch Demo
             </Button>
           </motion.div>
           
-          {/* Trust Indicators */}
+          {/* Clean Trust Indicators */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1 }}
             style={{ opacity }}
-            className="cluster justify-center text-sm text-gray-500"
+            className="flex flex-wrap justify-center gap-6 text-sm text-muted-foreground"
           >
-            <div className="flex items-center glass-card px-4 py-2 rounded-lg">
-              <CheckCircle className="w-4 h-4 text-green-500 mr-2" />
+            <div className="flex items-center">
+              <CheckCircle className="w-4 h-4 text-green-600 mr-2" />
               No account needed
             </div>
-            <div className="flex items-center glass-card px-4 py-2 rounded-lg">
-              <Award className="w-4 h-4 text-orange-500 mr-2" />
+            <div className="flex items-center">
+              <Award className="w-4 h-4 text-primary mr-2" />
               Professional quality
             </div>
-            <div className="flex items-center glass-card px-4 py-2 rounded-lg">
-              <Zap className="w-4 h-4 text-blue-500 mr-2" />
+            <div className="flex items-center">
+              <Zap className="w-4 h-4 text-blue-600 mr-2" />
               Ready in minutes
             </div>
           </motion.div>
         </motion.div>
       </section>
 
-      {/* Features Section - Elevated Design */}
-      <section className="py-24 relative">
-        <div className="container mx-auto px-4">
+      {/* Professional Features Section */}
+      <section className="py-24 bg-muted/30">
+        <div className="container mx-auto px-4 max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 50 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-center mb-20"
+            className="text-center mb-16"
           >
-            <h2 className="text-headline mb-6 gradient-text-secondary">
+            <h2 className="text-headline mb-4 text-foreground">
               Everything you need for a beautiful tribute
             </h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+            <p className="text-body-lg text-muted-foreground max-w-2xl mx-auto">
               Thoughtfully designed tools that help you create meaningful memorials with ease and elegance
             </p>
           </motion.div>
@@ -205,14 +199,14 @@ export function LandingPage() {
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <div className="card-modern card-interactive p-8 h-full group">
-                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-6 group-hover:scale-110 transition-spring`}>
-                    <feature.icon className="w-8 h-8 text-white" />
+                <div className="card-modern p-6 h-full group hover:shadow-lg transition-all duration-200">
+                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
+                    <feature.icon className="w-6 h-6 text-white" />
                   </div>
-                  <h3 className="text-title mb-4 group-hover:gradient-text-primary transition-all">
+                  <h3 className="text-title mb-3 text-foreground">
                     {feature.title}
                   </h3>
-                  <p className="text-body leading-relaxed">
+                  <p className="text-body text-muted-foreground leading-relaxed">
                     {feature.description}
                   </p>
                 </div>
@@ -223,82 +217,40 @@ export function LandingPage() {
       </section>
 
 
-      {/* Final CTA - Gradient Masterpiece */}
-      <section className="py-24 relative overflow-hidden">
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: `
-              linear-gradient(135deg, 
-                hsla(15, 100%, 60%, 0.95) 0%, 
-                hsla(25, 95%, 65%, 0.9) 35%,
-                hsla(270, 95%, 75%, 0.85) 100%
-              )
-            `
-          }}
-        />
-        
-        {/* Animated background elements */}
-        <div className="absolute inset-0">
-          <motion.div
-            animate={{
-              scale: [1, 1.1, 1],
-              rotate: [0, 180, 360],
-            }}
-            transition={{
-              duration: 20,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="absolute -top-40 -left-40 w-80 h-80 rounded-full bg-white/10 blur-3xl"
-          />
-          <motion.div
-            animate={{
-              scale: [1.1, 1, 1.1],
-              rotate: [360, 180, 0],
-            }}
-            transition={{
-              duration: 25,
-              repeat: Infinity,
-              ease: "linear"
-            }}
-            className="absolute -bottom-40 -right-40 w-96 h-96 rounded-full bg-white/10 blur-3xl"
-          />
-        </div>
-        
-        <div className="container mx-auto px-4 text-center relative z-10">
+      {/* Professional Final CTA */}
+      <section className="py-24 bg-gradient-to-r from-primary/5 to-primary/10">
+        <div className="container mx-auto px-4 text-center max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-headline text-white mb-6">
+            <h2 className="text-headline text-foreground mb-4">
               Ready to honor their memory?
             </h2>
-            <p className="text-xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-              Create a meaningful tribute that celebrates their life, legacy, and the love they shared. 
-              Start your memorial program today.
+            <p className="text-body-lg text-muted-foreground mb-8 max-w-xl mx-auto">
+              Create a meaningful tribute that celebrates their life, legacy, and the love they shared.
             </p>
             
             <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
               <Button 
                 asChild 
                 size="lg" 
-                className="bg-white text-gray-900 hover:bg-gray-50 text-xl px-12 py-6 font-semibold shadow-2xl border-0 transition-all duration-300"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground h-14 px-10 font-medium text-lg rounded-lg shadow-lg hover:shadow-xl transition-all"
               >
                 <Link to="/create">
                   Begin Creating Now
-                  <ArrowRight className="ml-3 w-6 h-6" />
+                  <ArrowRight className="ml-2 w-5 h-5" />
                 </Link>
               </Button>
             </motion.div>
             
-            <p className="text-white/80 text-sm mt-6">
-              Free to start • No account required • Professional results guaranteed
+            <p className="text-muted-foreground text-sm mt-6">
+              Free to start • No account required • Professional results
             </p>
           </motion.div>
         </div>

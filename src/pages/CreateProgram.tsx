@@ -124,21 +124,13 @@ export function CreateProgram() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-purple-50 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 opacity-20">
+    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+      {/* Subtle background pattern */}
+      <div className="absolute inset-0 opacity-30">
         <div 
-          className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full"
+          className="absolute inset-0"
           style={{
-            background: 'linear-gradient(135deg, hsla(15,100%,70%,0.1) 0%, transparent 50%)',
-            filter: 'blur(40px)',
-          }}
-        />
-        <div 
-          className="absolute bottom-1/3 right-1/4 w-80 h-80 rounded-full"
-          style={{
-            background: 'linear-gradient(135deg, hsla(270,95%,75%,0.1) 0%, transparent 50%)',
-            filter: 'blur(60px)',
+            background: `var(--gradient-mesh)`
           }}
         />
       </div>
@@ -157,17 +149,14 @@ export function CreateProgram() {
             transition={{ delay: 0.2, duration: 0.5 }}
             className="flex items-center justify-center mb-6"
           >
-            <div className="relative">
-              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-500 to-red-500 shadow-xl">
-                <Heart className="h-8 w-8 text-white fill-white" />
-              </div>
-              <div className="absolute -top-2 -right-2 w-5 h-5 bg-white rounded-full shadow-md" />
+            <div className="w-12 h-12 rounded-xl bg-primary flex items-center justify-center shadow-sm">
+              <Heart className="h-6 w-6 text-primary-foreground fill-current" />
             </div>
           </motion.div>
-          <h1 className="text-display mb-4 gradient-text-primary">
+          <h1 className="text-display mb-4 text-foreground">
             Create Memorial Program
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-body-lg text-muted-foreground max-w-2xl mx-auto">
             Honor your loved one with a beautiful, personalized program that celebrates their life and legacy
           </p>
         </motion.div>
