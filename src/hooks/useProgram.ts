@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { api, type ApiProgram, type CreateProgramData } from '../lib/api';
+import { api, type CreateProgramData } from '../lib/api';
 
 export function useProgram(programId?: string) {
   return useQuery({
@@ -59,7 +59,7 @@ export function useUploadPhoto() {
   return useMutation({
     mutationFn: ({ programId, file }: { programId: string; file: File }) => 
       api.uploadPhoto(programId, file),
-    onSuccess: (photo, { programId }) => {
+    onSuccess: (_, { programId }) => {
       queryClient.invalidateQueries({ queryKey: ['program', programId] });
     },
   });

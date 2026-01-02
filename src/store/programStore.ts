@@ -118,7 +118,7 @@ const initialState = {
 
 export const useProgramStore = create<ProgramState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       ...initialState,
       
       setStep: (step) => set({ currentStep: step }),

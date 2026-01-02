@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, Eye } from 'lucide-react';
+import { ChevronLeft, Eye } from 'lucide-react';
 import { useProgramStore } from '../store/programStore';
 import { LovedOneStep } from '../components/steps/LovedOneStep';
 import { FamilyStep } from '../components/steps/FamilyStep';
