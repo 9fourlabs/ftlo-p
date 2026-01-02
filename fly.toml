@@ -1,14 +1,14 @@
-# fly.toml app configuration file generated for funeral-programs-app
+# fly.toml app configuration file generated for ftlo-p
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'funeral-programs-app'
+app = 'ftlo-p'
 primary_region = 'iad'
 
 [build]
   [build.args]
-    VITE_API_BASE_URL = "https://funeral-programs-app.fly.dev/api"
+    VITE_API_BASE_URL = "https://ftlo-p.fly.dev/api"
 
 [processes]
   app = 'node server/dist/index.js'
@@ -16,7 +16,7 @@ primary_region = 'iad'
 [env]
   PORT = '8080'
   NODE_ENV = 'production'
-  FRONTEND_URL = 'https://funeral-programs-app.fly.dev'
+  FRONTEND_URL = 'https://ftlo-p.fly.dev'
 
 [[mounts]]
   source = 'data'
