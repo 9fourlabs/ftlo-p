@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion } from 'framer-motion';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useProgramStore } from '@/store/programStore';
@@ -31,8 +31,7 @@ export function LovedOneStep() {
     register,
     handleSubmit,
     watch,
-    formState: { errors, isValid },
-    setValue,
+    formState: { errors },
     trigger,
   } = useForm<LovedOneFormData>({
     resolver: zodResolver(lovedOneSchema),
@@ -77,7 +76,7 @@ export function LovedOneStep() {
 
   const handleFieldBlur = async (fieldName: string) => {
     setFocusedField(null);
-    await trigger(fieldName);
+    await trigger(fieldName as keyof LovedOneFormData);
   };
 
   const renderFormField = (

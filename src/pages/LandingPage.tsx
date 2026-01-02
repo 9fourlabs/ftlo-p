@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { 
   Heart, 
   Star, 
@@ -45,20 +44,20 @@ export function LandingPage() {
           
           {/* Animated floating elements */}
           <motion.div
-            style={{ y: y1 }}
-            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full"
-            style={{
+            style={{ 
+              y: y1,
               background: 'linear-gradient(135deg, hsla(15,100%,70%,0.1) 0%, transparent 50%)',
               filter: 'blur(40px)',
             }}
+            className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full"
           />
           <motion.div
-            style={{ y: y2 }}
-            className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full"
-            style={{
+            style={{ 
+              y: y2,
               background: 'linear-gradient(135deg, hsla(270,95%,75%,0.1) 0%, transparent 50%)',
               filter: 'blur(60px)',
             }}
+            className="absolute top-1/3 right-1/4 w-80 h-80 rounded-full"
           />
         </div>
         
