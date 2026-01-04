@@ -6,17 +6,10 @@
 app = 'ftlo-p'
 primary_region = 'iad'
 
-[build]
-  [build.args]
-    VITE_API_BASE_URL = "https://ftlo-p.fly.dev/api"
-
-[processes]
-  app = 'node server/dist/index.js'
-
 [env]
-  PORT = '8080'
+  PORT = '3000'
   NODE_ENV = 'production'
-  FRONTEND_URL = 'https://ftlo-p.fly.dev'
+  BASE_URL = 'https://ftlo-p.fly.dev'
 
 [[mounts]]
   source = 'data'
@@ -26,12 +19,11 @@ primary_region = 'iad'
   auto_extend_size_limit = '10GB'
 
 [http_service]
-  internal_port = 8080
+  internal_port = 3000
   force_https = true
   auto_stop_machines = true
   auto_start_machines = true
   min_machines_running = 1
-  processes = ['app']
 
 [http_service.concurrency]
   type = "connections"
@@ -43,7 +35,7 @@ primary_region = 'iad'
   interval = "30s"
   method = "GET"
   timeout = "5s"
-  path = "/api/health"
+  path = "/"
 
 [[vm]]
   memory = '1gb'

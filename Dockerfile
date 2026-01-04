@@ -1,50 +1,47 @@
-FROM node:20-alpine
+FROM node:20-alpine AS base
 
-# Install OpenSSL and other dependencies for Prisma
-RUN apk add --no-cache openssl openssl-dev libc6-compat
-
-# Cache buster - force complete rebuild 2025-01-02
+# Install dependencies only when needed
+FROM base AS deps
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Copy package files first (for better caching)
+# Copy package files
 COPY package*.json ./
-COPY server/package*.json ./server/
-
-# Install ALL dependencies (including dev) for building
+# Install dependencies
 RUN npm ci
-RUN cd server && npm ci
 
-# Copy source code (dist/ is excluded via .dockerignore)
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Accept build arguments for environment variables
-ARG VITE_API_BASE_URL
-ARG BUILD_TIMESTAMP=unknown
+# Set environment variables for build
+ENV NEXT_TELEMETRY_DISABLED 1
 
-# Set environment variables for build process
-ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
-ENV BUILD_TIMESTAMP=$BUILD_TIMESTAMP
-
-# Generate Prisma client
-RUN cd server && npx prisma generate
-
-# Force complete clean rebuild - break all caches
-RUN rm -rf dist/ node_modules/.cache/ .next/ build/ server/dist/
+# Build the application
 RUN npm run build
-RUN cd server && npm run build
 
-# Verify build succeeded
-RUN ls -la dist/ && ls -la server/dist/
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
 
-# Remove dev dependencies to reduce image size
-RUN npm prune --omit=dev
-RUN cd server && npm prune --omit=dev
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
 
-# Create uploads directory
-RUN mkdir -p uploads
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
 
-# Expose port
-EXPOSE 8080
+# Copy built application
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
-# Start the application
-CMD ["node", "server/dist/index.js"]
+USER nextjs
+
+EXPOSE 3000
+
+ENV PORT 3000
+ENV HOSTNAME "0.0.0.0"
+
+CMD ["node", "server.js"]
