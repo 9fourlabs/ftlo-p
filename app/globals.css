@@ -75,9 +75,14 @@
   }
 }
 
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap');
+
 @layer utilities {
   body {
-    font-family: "Manrope", Arial, Helvetica, sans-serif;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    letter-spacing: -0.01em;
+    -webkit-font-smoothing: antialiased;
   }
 }
 
@@ -168,31 +173,64 @@
 */
 
 :root {
+  /* Base colors matching FTLO */
   --background: hsl(0 0% 100%);
   --foreground: hsl(240 10% 3.9%);
   --card: hsl(0 0% 100%);
   --card-foreground: hsl(240 10% 3.9%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(240 10% 3.9%);
-  --primary: hsl(15 100% 60%);
-  --primary-foreground: hsl(0 0% 98%);
+  
+  /* Primary - Warm orange to match FTLO */
+  --primary: hsl(15 100% 60%); /* #FF9933 - warm memorial orange */
+  --primary-foreground: hsl(0 0% 100%);
+  
+  /* Secondary and muted colors */
   --secondary: hsl(240 4.8% 95.9%);
   --secondary-foreground: hsl(240 5.9% 10%);
   --muted: hsl(240 4.8% 95.9%);
   --muted-foreground: hsl(240 3.8% 46.1%);
   --accent: hsl(240 4.8% 95.9%);
   --accent-foreground: hsl(240 5.9% 10%);
+  
+  /* Destructive and form elements */
   --destructive: hsl(0 84.2% 60.2%);
   --destructive-foreground: hsl(0 0% 98%);
   --border: hsl(240 5.9% 90%);
   --input: hsl(240 5.9% 90%);
   --ring: hsl(15 100% 60%);
+  
+  /* Chart colors */
   --chart-1: hsl(12 76% 61%);
   --chart-2: hsl(173 58% 39%);
   --chart-3: hsl(197 37% 24%);
   --chart-4: hsl(43 74% 66%);
   --chart-5: hsl(27 87% 67%);
-  --radius: 0.6rem;
+  
+  /* Radius */
+  --radius: 0.5rem;
+  
+  /* Status colors for consistency */
+  --success: hsl(142 76% 36%);
+  --warning: hsl(38 92% 50%);
+  --error: hsl(0 84.2% 60.2%);
+  --info: hsl(15 100% 60%);
+  
+  /* Modern gradients from FTLO */
+  --gradient-primary: linear-gradient(135deg, #FF9933 0%, #FF6B6B 100%);
+  --gradient-mesh: radial-gradient(at 40% 20%, hsla(28,100%,74%,1) 0px, transparent 50%),
+                   radial-gradient(at 80% 0%, hsla(189,100%,56%,0.5) 0px, transparent 50%),
+                   radial-gradient(at 0% 50%, hsla(355,100%,93%,1) 0px, transparent 50%);
+  
+  /* Glass morphism (for cards/modals) */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.18);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+  --glass-blur: blur(12px);
+  
+  /* Modern shadows */
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --shadow-color: 0 10px 40px rgba(255, 153, 51, 0.15);
 }
 
 /*
@@ -206,8 +244,11 @@
   --card-foreground: hsl(0 0% 98%);
   --popover: hsl(240 10% 3.9%);
   --popover-foreground: hsl(0 0% 98%);
-  --primary: hsl(0 0% 98%);
-  --primary-foreground: hsl(240 5.9% 10%);
+  
+  /* Keep warm orange in dark mode */
+  --primary: hsl(15 100% 60%);
+  --primary-foreground: hsl(0 0% 98%);
+  
   --secondary: hsl(240 3.7% 15.9%);
   --secondary-foreground: hsl(0 0% 98%);
   --muted: hsl(240 3.7% 15.9%);
@@ -218,12 +259,17 @@
   --destructive-foreground: hsl(0 0% 98%);
   --border: hsl(240 3.7% 15.9%);
   --input: hsl(240 3.7% 15.9%);
-  --ring: hsl(240 4.9% 83.9%);
+  --ring: hsl(15 100% 60%);
   --chart-1: hsl(220 70% 50%);
   --chart-2: hsl(160 60% 45%);
   --chart-3: hsl(30 80% 55%);
   --chart-4: hsl(280 65% 60%);
   --chart-5: hsl(340 75% 55%);
+  
+  /* Dark mode gradients */
+  --gradient-primary: linear-gradient(135deg, #FF9933 0%, #FF6B6B 100%);
+  --glass-bg: rgba(0, 0, 0, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.08);
 }
 
 /*
@@ -271,5 +317,84 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+  
+  /* Elegant serif for headings - memorial appropriate */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+  
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-light tracking-tight;
+    line-height: 0.9;
+  }
+  
+  h2 {
+    @apply text-3xl md:text-4xl font-light tracking-tight;
+    line-height: 1.1;
+  }
+  
+  h3 {
+    @apply text-2xl md:text-3xl font-light;
+  }
+  
+  h4 {
+    @apply text-xl md:text-2xl font-light;
+  }
+  
+  h5 {
+    @apply text-lg md:text-xl font-medium;
+  }
+  
+  h6 {
+    @apply text-base md:text-lg font-medium;
+  }
+  
+  /* Selection color */
+  ::selection {
+    @apply bg-primary/20 text-primary;
+  }
+  
+  /* Smooth transitions */
+  * {
+    @apply transition-colors duration-200;
+  }
+  
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  /* Form inputs with FTLO styling */
+  .form-input {
+    @apply w-full px-4 py-3 rounded-md border border-input bg-background/50 backdrop-blur-xs focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-200;
+  }
+  
+  /* Step indicators */
+  .step-indicator {
+    @apply w-full h-2 bg-muted rounded-full overflow-hidden;
+  }
+  
+  .step-indicator-fill {
+    @apply h-full bg-gradient-to-r from-primary to-primary/70 transition-all duration-500 ease-out;
+  }
+}
+
+@layer utilities {
+  /* Soft fade effects for photos */
+  .memorial-vignette {
+    mask-image: radial-gradient(ellipse at center, black 40%, transparent 100%);
+  }
+  
+  /* Elegant borders */
+  .memorial-border {
+    @apply border-2 border-primary/10 rounded-lg p-8 bg-gradient-to-b from-primary/5 to-transparent;
+  }
+  
+  /* Text shadows for overlays */
+  .text-shadow {
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1);
   }
 }

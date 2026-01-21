@@ -99,42 +99,55 @@ export function PhotoUploadStep({ data, updateData }: PhotoUploadStepProps) {
       </div>
 
       {/* Upload Area */}
-      <Card
-        className={`p-8 border-2 border-dashed transition-colors ${
-          isDragging ? 'border-primary bg-primary/5' : 'border-muted-foreground/25'
-        }`}
-        onDragOver={handleDragOver}
-        onDragLeave={handleDragLeave}
-        onDrop={handleDrop}
-      >
-        <div className="text-center">
-          <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-          <p className="text-lg font-medium mb-2">
-            Drag and drop photos here, or click to select
-          </p>
-          <p className="text-sm text-muted-foreground mb-4">
-            Supports JPG, PNG, and other image formats
-          </p>
-          <input
-            id="photo-upload"
-            type="file"
-            multiple
-            accept="image/*"
-            className="hidden"
-            onChange={handleFileSelect}
-            disabled={uploading || data.photos.length >= 20}
-          />
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={uploading || data.photos.length >= 20}
-            onClick={() => document.getElementById('photo-upload')?.click()}
-          >
-            <ImageIcon className="w-4 h-4 mr-2" />
-            Select Photos
-          </Button>
-        </div>
-      </Card>
+      <div className="relative group">
+        <Card
+          className={`p-8 border-2 border-dashed transition-all duration-300 ${
+            isDragging 
+              ? 'border-primary/50 bg-gradient-to-b from-primary/10 to-primary/5' 
+              : 'border-primary/30 hover:border-primary/50'
+          } bg-gradient-to-b from-primary/5 to-transparent`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+        >
+          <div className="text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center">
+              <Upload className="w-8 h-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-serif font-light mb-2 text-foreground">
+              Add Memorial Photos
+            </h3>
+            <p className="text-sm text-muted-foreground mb-6 max-w-md mx-auto leading-relaxed">
+              Share cherished memories through photos that celebrate their life and legacy
+            </p>
+            <input
+              id="photo-upload"
+              type="file"
+              multiple
+              accept="image/*"
+              className="hidden"
+              onChange={handleFileSelect}
+              disabled={uploading || data.photos.length >= 20}
+            />
+            <Button
+              type="button"
+              variant="gradient"
+              size="lg"
+              disabled={uploading || data.photos.length >= 20}
+              onClick={() => document.getElementById('photo-upload')?.click()}
+              className="h-12 px-8"
+            >
+              <ImageIcon className="w-5 h-5 mr-2" />
+              {data.photos.length === 0 ? 'Select Photos' : 'Add More Photos'}
+            </Button>
+            {data.photos.length < 20 && (
+              <p className="text-xs text-muted-foreground/70 mt-3">
+                Upload up to {20 - data.photos.length} more photos • JPG, PNG supported
+              </p>
+            )}
+          </div>
+        </Card>
+      </div>
 
       {/* Photo Grid */}
       {data.photos.length > 0 && (
@@ -146,44 +159,51 @@ export function PhotoUploadStep({ data, updateData }: PhotoUploadStepProps) {
             )}
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {data.photos.map((photo) => (
-              <Card key={photo.id} className="relative group">
-                <div className="aspect-square relative overflow-hidden rounded-t-lg">
+              <Card 
+                key={photo.id} 
+                className={`relative group overflow-hidden transition-all duration-300 hover:shadow-lg ${
+                  photo.isPrimary ? 'ring-2 ring-primary/50 shadow-color' : ''
+                }`}
+              >
+                <div className="aspect-square relative overflow-hidden">
                   <img
                     src={photo.url}
                     alt=""
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover memorial-vignette transition-transform duration-300 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
                     <Button
                       size="sm"
-                      variant="secondary"
+                      variant="glass"
                       onClick={() => setPrimaryPhoto(photo.id)}
                       disabled={photo.isPrimary}
+                      className="backdrop-blur-md"
                     >
-                      <Star className={`w-4 h-4 ${photo.isPrimary ? 'fill-current' : ''}`} />
+                      <Star className={`w-4 h-4 ${photo.isPrimary ? 'fill-current text-primary' : 'text-white'}`} />
                     </Button>
                     <Button
                       size="sm"
                       variant="destructive"
                       onClick={() => removePhoto(photo.id)}
+                      className="backdrop-blur-md"
                     >
                       <X className="w-4 h-4" />
                     </Button>
                   </div>
                   {photo.isPrimary && (
-                    <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-1 rounded text-xs font-medium">
-                      Primary Photo
+                    <div className="absolute top-3 left-3 bg-gradient-to-r from-primary to-primary/80 text-white px-3 py-1.5 rounded-full text-xs font-medium shadow-lg">
+                      ★ Primary Photo
                     </div>
                   )}
                 </div>
-                <div className="p-2">
+                <div className="p-3 bg-gradient-to-b from-background to-primary/5">
                   <Input
-                    placeholder="Add caption..."
+                    placeholder="Add a meaningful caption..."
                     value={photo.caption || ''}
                     onChange={(e) => updatePhotoCaption(photo.id, e.target.value)}
-                    className="text-sm"
+                    className="text-sm form-input border-primary/20 focus:border-primary/40"
                   />
                 </div>
               </Card>
