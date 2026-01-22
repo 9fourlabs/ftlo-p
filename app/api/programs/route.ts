@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUser } from '@/lib/auth/session';
-import { db } from '@/lib/db/drizzle';
+import { getDb } from '@/lib/db/drizzle';
 import { programs, programPhotos, programTimeline, programFamily, NewProgram, NewProgramPhoto, NewProgramTimeline, NewProgramFamily } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 import { z } from 'zod';
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userPrograms = await db
+    const userPrograms = await getDb()
       .select()
       .from(programs)
       .where(eq(programs.userId, user.id))
@@ -106,7 +106,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Create program and related data in a transaction
-    const result = await db.transaction(async (tx) => {
+    const result = await getDb().transaction(async (tx) => {
       // Create the main program
       const [createdProgram] = await tx
         .insert(programs)

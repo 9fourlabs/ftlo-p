@@ -1,5 +1,5 @@
 import { desc, and, eq, isNull } from 'drizzle-orm';
-import { db } from './drizzle';
+import { getDb } from './drizzle';
 import { activityLogs, teamMembers, teams, users } from './schema';
 import { cookies } from 'next/headers';
 import { verifyToken } from '@/lib/auth/session';
@@ -23,7 +23,7 @@ export async function getUser() {
     return null;
   }
 
-  const user = await db
+  const user = await getDb()
     .select()
     .from(users)
     .where(and(eq(users.id, sessionData.user.id), isNull(users.deletedAt)))
@@ -37,7 +37,7 @@ export async function getUser() {
 }
 
 export async function getTeamByStripeCustomerId(customerId: string) {
-  const result = await db
+  const result = await getDb()
     .select()
     .from(teams)
     .where(eq(teams.stripeCustomerId, customerId))
@@ -55,7 +55,7 @@ export async function updateTeamSubscription(
     subscriptionStatus: string;
   }
 ) {
-  await db
+  await getDb()
     .update(teams)
     .set({
       ...subscriptionData,
@@ -65,7 +65,7 @@ export async function updateTeamSubscription(
 }
 
 export async function getUserWithTeam(userId: number) {
-  const result = await db
+  const result = await getDb()
     .select({
       user: users,
       teamId: teamMembers.teamId
@@ -84,7 +84,7 @@ export async function getActivityLogs() {
     throw new Error('User not authenticated');
   }
 
-  return await db
+  return await getDb()
     .select({
       id: activityLogs.id,
       action: activityLogs.action,
@@ -105,7 +105,7 @@ export async function getTeamForUser() {
     return null;
   }
 
-  const result = await db.query.teamMembers.findFirst({
+  const result = await getDb().query.teamMembers.findFirst({
     where: eq(teamMembers.userId, user.id),
     with: {
       team: {

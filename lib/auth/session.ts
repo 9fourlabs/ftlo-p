@@ -2,7 +2,7 @@ import { compare, hash } from 'bcryptjs';
 import { SignJWT, jwtVerify } from 'jose';
 import { cookies } from 'next/headers';
 import { NewUser, User } from '@/lib/db/schema';
-import { db } from '@/lib/db/drizzle';
+import { getDb } from '@/lib/db/drizzle';
 import { users } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
 
@@ -50,7 +50,7 @@ export async function getUser(): Promise<User | null> {
   const session = await getSession();
   if (!session?.user?.id) return null;
   
-  const [user] = await db
+  const [user] = await getDb()
     .select()
     .from(users)
     .where(eq(users.id, session.user.id))

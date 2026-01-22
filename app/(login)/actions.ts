@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { and, eq, sql } from 'drizzle-orm';
-import { db } from '@/lib/db/drizzle';
+import { getDb } from '@/lib/db/drizzle';
 import {
   User,
   users,
@@ -41,7 +41,7 @@ async function logActivity(
     action: type,
     ipAddress: ipAddress || ''
   };
-  await db.insert(activityLogs).values(newActivity);
+  await getDb().insert(activityLogs).values(newActivity);
 }
 
 const signInSchema = z.object({
@@ -131,7 +131,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
     role: 'owner' // Default role, will be overridden if there's an invitation
   };
 
-  const [createdUser] = await db.insert(users).values(newUser).returning();
+  const [createdUser] = await getDb().insert(users).values(newUser).returning();
 
   if (!createdUser) {
     return {
@@ -184,7 +184,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
       name: `${email}'s Team`
     };
 
-    [createdTeam] = await db.insert(teams).values(newTeam).returning();
+    [createdTeam] = await getDb().insert(teams).values(newTeam).returning();
 
     if (!createdTeam) {
       return {
@@ -207,7 +207,7 @@ export const signUp = validatedAction(signUpSchema, async (data, formData) => {
   };
 
   await Promise.all([
-    db.insert(teamMembers).values(newTeamMember),
+    getDb().insert(teamMembers).values(newTeamMember),
     logActivity(teamId, createdUser.id, ActivityType.SIGN_UP),
     setSession(createdUser)
   ]);
@@ -350,7 +350,7 @@ export const updateAccount = validatedActionWithUser(
     const userWithTeam = await getUserWithTeam(user.id);
 
     await Promise.all([
-      db.update(users).set({ name, email }).where(eq(users.id, user.id)),
+      getDb().update(users).set({ name, email }).where(eq(users.id, user.id)),
       logActivity(userWithTeam?.teamId, user.id, ActivityType.UPDATE_ACCOUNT)
     ]);
 
@@ -437,7 +437,7 @@ export const inviteTeamMember = validatedActionWithUser(
     }
 
     // Create a new invitation
-    await db.insert(invitations).values({
+    await getDb().insert(invitations).values({
       teamId: userWithTeam.teamId,
       email,
       role,
