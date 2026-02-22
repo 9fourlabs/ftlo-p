@@ -166,7 +166,6 @@ export default function CreateAIProgramPage() {
           <Button
             variant="outline"
             onClick={handleBack}
-            disabled={currentStep === 'collect'}
           >
             <ChevronLeft className="mr-2 h-4 w-4" />
             Back
