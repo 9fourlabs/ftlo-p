@@ -53,10 +53,11 @@ const createProgramSchema = z.object({
   // Timeline/Order of Service (array of objects)
   timeline: z.array(z.object({
     id: z.string(),
+    type: z.string(),
     time: z.string().optional(),
     title: z.string(),
     description: z.string().optional(),
-    participants: z.string().optional(),
+    performer: z.string().optional(),
   })).default([]),
   
   // Draft status
@@ -141,10 +142,11 @@ export async function POST(request: NextRequest) {
       if (timeline.length > 0) {
         const timelineData: NewProgramTimeline[] = timeline.map((event, index) => ({
           programId: createdProgram.id,
+          type: event.type,
           time: event.time,
           title: event.title,
           description: event.description,
-          participants: event.participants,
+          performer: event.performer,
           sortOrder: index,
         }));
         
