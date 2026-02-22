@@ -273,10 +273,10 @@ export const updatePassword = validatedActionWithUser(
 
     const newPasswordHash = await hashPassword(newPassword);
     const userWithTeam = await getUserWithTeam(user.id);
+    const db = await getDb();
 
     await Promise.all([
-      db
-        .update(users)
+      db.update(users)
         .set({ passwordHash: newPasswordHash })
         .where(eq(users.id, user.id)),
       logActivity(userWithTeam?.teamId, user.id, ActivityType.UPDATE_PASSWORD)

@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Heart, Plus, FileText, Calendar } from 'lucide-react';
+import { Heart, Plus, FileText, Calendar, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import useSWR from 'swr';
@@ -44,10 +44,10 @@ function RecentPrograms() {
           <p className="text-muted-foreground mb-6">
             Create your first memorial program to honor a loved one
           </p>
-          <Button asChild>
-            <Link href="/dashboard/create">
+          <Button asChild size="lg">
+            <Link href="/dashboard/program/create">
               <Plus className="w-4 h-4 mr-2" />
-              Create Your First Program
+              Create Memorial Program
             </Link>
           </Button>
         </CardContent>
@@ -112,8 +112,8 @@ export default function DashboardPage() {
             Create and manage memorial programs for your loved ones
           </p>
         </div>
-        <Button asChild className="mt-4 md:mt-0">
-          <Link href="/dashboard/create">
+        <Button asChild size="lg">
+          <Link href="/dashboard/program/create">
             <Plus className="w-4 h-4 mr-2" />
             Create Program
           </Link>

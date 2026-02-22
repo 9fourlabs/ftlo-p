@@ -80,6 +80,7 @@ export const programs = pgTable('programs', {
   userId: integer('user_id')
     .notNull()
     .references(() => users.id),
+  // Basic information
   firstName: varchar('first_name', { length: 100 }).notNull(),
   lastName: varchar('last_name', { length: 100 }).notNull(),
   middleName: varchar('middle_name', { length: 100 }),
@@ -88,8 +89,15 @@ export const programs = pgTable('programs', {
   deathDate: varchar('death_date', { length: 20 }),
   birthPlace: varchar('birth_place', { length: 255 }),
   deathPlace: varchar('death_place', { length: 255 }),
+  // AI-generated content
+  lovedOneStory: text('loved_one_story'), // Initial free-form text from user
   obituary: text('obituary'),
+  aiGeneratedObituary: text('ai_generated_obituary'), // AI's version
+  obituaryTone: varchar('obituary_tone', { length: 20 }).default('warm'), // formal, warm, celebratory
+  obituaryLength: varchar('obituary_length', { length: 20 }).default('medium'), // short, medium, long
+  lifeHighlights: text('life_highlights'), // JSON array of highlights
   favoriteMemories: text('favorite_memories'),
+  // Service details
   serviceName: varchar('service_name', { length: 255 }),
   serviceDate: varchar('service_date', { length: 20 }),
   serviceTime: varchar('service_time', { length: 20 }),
@@ -97,10 +105,14 @@ export const programs = pgTable('programs', {
   venueAddress: text('venue_address'),
   officiant: varchar('officiant', { length: 255 }),
   additionalInfo: text('additional_info'),
+  // Template and styling
   selectedTemplate: varchar('selected_template', { length: 50 }).default('classic-elegance'),
+  templateCategory: varchar('template_category', { length: 50 }), // traditional, modern, nature, patriotic
   accentColor: varchar('accent_color', { length: 7 }),
   font: varchar('font', { length: 50 }),
+  // Metadata
   isDraft: integer('is_draft').default(1), // 0 = false, 1 = true
+  lastAutoSave: timestamp('last_auto_save'),
   createdAt: timestamp('created_at').notNull().defaultNow(),
   updatedAt: timestamp('updated_at').notNull().defaultNow(),
 });
@@ -121,10 +133,13 @@ export const programTimeline = pgTable('program_timeline', {
   programId: integer('program_id')
     .notNull()
     .references(() => programs.id),
-  time: varchar('time', { length: 20 }),
+  type: varchar('type', { length: 50 }).notNull(), // processional, prayer, eulogy, music, etc.
   title: varchar('title', { length: 255 }).notNull(),
   description: text('description'),
-  participants: varchar('participants', { length: 500 }),
+  performer: varchar('performer', { length: 255 }), // Who's performing/speaking
+  duration: integer('duration'), // Duration in minutes
+  time: varchar('time', { length: 20 }), // Optional specific time
+  notes: text('notes'), // Additional notes
   sortOrder: integer('sort_order').default(0),
 });
 
