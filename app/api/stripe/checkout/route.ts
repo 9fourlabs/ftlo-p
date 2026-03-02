@@ -54,6 +54,7 @@ export async function GET(request: NextRequest) {
       throw new Error("No user ID found in session's client_reference_id.");
     }
 
+    const db = getDb();
     const user = await db
       .select()
       .from(users)
