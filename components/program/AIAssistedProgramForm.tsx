@@ -187,7 +187,7 @@ export function AIAssistedProgramForm({ onSubmit }: AIAssistedProgramFormProps) 
                   <PopoverContent className="w-auto p-0" align="start">
                     <Calendar
                       mode="single"
-                      selected={formData.birthDate}
+                      selected={formData.birthDate || undefined}
                       onSelect={(date) => setFormData({ ...formData, birthDate: date || null })}
                       initialFocus
                       fromYear={1900}
